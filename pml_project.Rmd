@@ -1,1 +1,55 @@
-c:/users/Muffin/pml/pml_project.Rmd
+---
+title: "Practical Machine Learning Project"
+output: html_document
+---
+###Summary  
+  
+Measurements were collected for users performing various exercises while wearing a motion-sensoring device. Using these data, an algorithm was created to predict if the user had performed the exercise correctly or incorrectly (4 types of errors).
+
+###Load the Data  
+  
+Load the data sets (training and problem set) while removing the various error characters.
+```{r}
+trainorig<-read.csv("training.csv", header=TRUE, na.strings=c("#DIV/0!","","NA","NULL"))
+problem<-read.csv("testing.csv", header=TRUE, na.strings=c("#DIV/0!","","NA","NULL"))
+```
+  
+###Data Processing  
+  
+Separate the training data into a training and testing set for cross validation purposes:
+
+```{r}
+library(caret)
+intrain<-createDataPartition(y=trainorig$classe, p=.6, list=FALSE)
+train<-trainorig[intrain,]
+test<-trainorig[-intrain,]
+```
+  
+Remove columns where all data is "NA"  
+```{r}
+train<-train[colnames(train[colSums(is.na(train))==0])]
+test<-test[colnames(test[colSums(is.na(test))==0])]
+```
+  
+Remove the columns 1-7 which are not predictor variables. Generate a prediction model using Random Forests
+```{r}
+train2<-train[,-c(1:7,60)]
+train2$classe<-train$classe
+library(randomForest)
+modfit<-randomForest(classe~., train2)
+```
+  
+Use the model to predict the class of the exercises in the test set. 
+```{r}
+test2<-test[,-c(1:7,60)]
+predict<-predict(modfit, newdata=test2)
+```
+View the model to receive an output of the error estimate.
+Create a confusion matrix to see how accurate the model predicted the test set.
+```{r}
+modfit
+confusionMatrix(predict,test$classe)
+```
+See from the confusion matrix that the predictions were very close and accuracy is high. An estimate for the out-of-sample error is seen above (about 0.6%).  
+The model was used to predict the classe factor for the problem set with a 20/20 accuracy.
+
