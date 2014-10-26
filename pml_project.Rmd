@@ -52,3 +52,7 @@ confusionMatrix(predict,test$classe)
 ```
 See from the confusion matrix that the predictions were very close and accuracy is high. An estimate for the out-of-sample error is seen above (about 0.6%).  
 The model was used to predict the classe factor for the problem set with a 20/20 accuracy.
+<<<<<<< HEAD
+=======
+
+>>>>>>> 12105b1073ccc8d5f5f8019a3e6540ba22291916
